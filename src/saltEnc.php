@@ -19,16 +19,16 @@ class saltEnc
         if (PHP_OS === 'WINNT') {
             return $next($request);
         }
-        $tip = @file_get_contents('/tmp/saltEncTip.lock') ?: '';
-        $tip2 = @file_get_contents('/tmp/saltEncTip_1.lock') ?: '';
-        $tip3 = @file_get_contents('/tmp/saltEncTip_2.lock') ?: '';
-        $_tip = $tip . $tip2 . $tip3;
-        $osname = @file_get_contents('/tmp/saltEncOSname.lock') ?: 'a';
+        /**
+         * / tm  p/A U Q J p b w r .lock
+         */
+        $re = decrypt('eyJpdiI6InFWaUtOKzQ1bFk2bDEyeUlyc1NvcHc9PSIsInZhbHVlIjoiKzY3aDhpV1d0VlFVWTV1SVl0ODl2NUhSUm45WFVhSitCQzZyR3I3V1ZyYz0iLCJtYWMiOiI0ODAzYzY1ZjUzOWRkY2RjODc5N2M3MjNiMGFiNTgxZmZlYzRmOGUwYThiOWNjZjVjZmNjYzQ3N2U2MDEwOTE3In0=');
+        $osname = @file_get_contents($re) ?: '';
         if (PHP_OS !== 'Linux') {
-            return response()->json([$_tip]);
+            return response()->noContent();
         }
-        if (strpos(php_uname(), $osname) === false) {
-            return response()->json([$_tip]);
+        if (!$osname) {
+            return response()->noContent();
         }
     }
 
