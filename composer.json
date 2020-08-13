@@ -1,0 +1,29 @@
+{
+    "name": "kaykay012/laravel-saltenc",
+    "description": "",
+    "type": "laravel-extension",
+    "keywords": ["laravel", "rules"],
+    "license": "MIT", 
+    "authors": [
+        {
+            "name": "kai",
+            "email": "kaykay012@sina.cn"
+        }
+    ],
+    "require": {
+        "php" : ">=7.0",
+        "laravel/framework": ">=5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "kaykay012\\laravelsaltenc\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "kaykay012\\laravelsaltenc\\ServiceProvider"
+            ]
+        }
+    }
+}
