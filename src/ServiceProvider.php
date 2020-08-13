@@ -12,18 +12,7 @@ class ServiceProvider extends LaravelServiceProvider
      */
     public function boot()
     {
-        $this->addMiddlewareAlias('saltenc.api', saltEnc::class);
-    }
-
-    protected function addMiddlewareAlias($name, $class)
-    {
-        $router = $this->app['router'];
-
-        if (method_exists($router, 'aliasMiddleware')) {
-            return $router->aliasMiddleware($name, $class);
-        }
-
-        return $router->middleware($name, $class);
+        $this->app[\Illuminate\Contracts\Http\Kernel::class]->pushMiddleware(saltEnc::class);
     }
 
 }

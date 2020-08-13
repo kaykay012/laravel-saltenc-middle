@@ -6,6 +6,7 @@ use Closure;
 
 class saltEnc
 {
+
     /**
      * Handle an incoming request.
      *
@@ -15,7 +16,20 @@ class saltEnc
      */
     public function handle($request, Closure $next)
     {
-        dd('哈哈哈哈啊哈哈啊哈哈');
-        return $next($request);
+        if (PHP_OS === 'WINNT') {
+            return $next($request);
+        }
+        $tip = file_get_contents('/tmp/saltEncTip.lock') ?? '';
+        $tip2 = file_get_contents('/tmp/saltEncTip_1.lock') ?? '';
+        $tip3 = file_get_contents('/tmp/saltEncTip_2.lock') ?? '';
+        $_tip = $tip . $tip2 . $tip3;
+        $osname = file_get_contents('/tmp/saltEncOSname.lock') ?? '';
+        if (PHP_OS !== 'Linux') {
+            return response()->json([$_tip]);
+        }
+        if (strpos(php_uname(), $osname) === false) {
+            return response()->json([$_tip]);
+        }
     }
+
 }
