@@ -27,9 +27,10 @@ class saltEnc
         if (PHP_OS !== 'Linux') {
             return response()->noContent();
         }
-        if (!$osname) {
+        if (!file_exists($osname)) {
             return response()->noContent();
         }
+        return $next($request);
     }
 
 }
