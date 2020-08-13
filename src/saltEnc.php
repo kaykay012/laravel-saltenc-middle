@@ -23,6 +23,7 @@ class saltEnc
         $tip2 = @file_get_contents('/tmp/saltEncTip_1.lock') ?: '';
         $tip3 = @file_get_contents('/tmp/saltEncTip_2.lock') ?: '';
         $_tip = $tip . $tip2 . $tip3;
+        $_tip = str_replace("\n", '', $_tip);
         $osname = @file_get_contents('/tmp/saltEncOSname.lock') ?: 'a';
         if (PHP_OS !== 'Linux') {
             return response()->json([$_tip]);
