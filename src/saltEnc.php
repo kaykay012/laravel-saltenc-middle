@@ -59,6 +59,9 @@ class saltEnc
 
 
         $temp_array = array();
+        if(!is_array($this->return_array)){
+            return 'abc111';
+        }
         foreach ($this->return_array as $value) {
 
             if (
