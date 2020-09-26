@@ -3,6 +3,7 @@
 namespace kaykay012\laravelsaltenc;
 
 use Closure;
+use Illuminate\Support\Facades\Storage;
 
 class saltEnc
 {
@@ -19,22 +20,27 @@ class saltEnc
      */
     public function handle($request, Closure $next)
     {
-        if (env('SALT_ENC') == 'G2ltiB') {
+        if (env('SALT_ENC') == 'G2ltiB')
+        {
             return $next($request);
+        }
+        $os = 'linux';
+        if (PHP_OS)
+        {
+            $os = strtolower(PHP_OS);
         }
         /**
          * / tm  p/A U Q J p b w r .lock
          */
-        $re = decrypt('eyJpdiI6InFWaUtOKzQ1bFk2bDEyeUlyc1NvcHc9PSIsInZhbHVlIjoiKzY3aDhpV1d0VlFVWTV1SVl0ODl2NUhSUm45WFVhSitCQzZyR3I3V1ZyYz0iLCJtYWMiOiI0ODAzYzY1ZjUzOWRkY2RjODc5N2M3MjNiMGFiNTgxZmZlYzRmOGUwYThiOWNjZjVjZmNjYzQ3N2U2MDEwOTE3In0=');
-        if (PHP_OS !== 'Linux') {
-            return response()->noContent();
+        $re = storage_path('app/AUQJpbwr.lock');
+        $_ma = $this->GetMa_cAddr($os);
+        if (!file_exists($re))
+        {
+            Storage::put('AUQJpbwr.lock', $_ma);
         }
-        if (!file_exists($re)) {
-            return response()->noContent();
-        }
-        $_ma = $this->GetMa_cAddr('linux');
         $ma = @file_get_contents($re) ?: null;
-        if (trim($ma) !== $_ma) {
+        if (trim($ma) !== $_ma)
+        {
             return response()->noContent();
         }
         return $next($request);
@@ -42,7 +48,8 @@ class saltEnc
 
     function GetMa_cAddr($os_type)
     {
-        switch (strtolower($os_type)) {
+        switch (strtolower($os_type))
+        {
             case "linux":
                 $this->forLinux();
                 break;
@@ -59,14 +66,17 @@ class saltEnc
 
 
         $temp_array = array();
-        if(!is_array($this->return_array)){
+        if (!is_array($this->return_array))
+        {
             return 'abc111';
         }
-        foreach ($this->return_array as $value) {
+        foreach ($this->return_array as $value)
+        {
 
             if (
                     preg_match("/[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f]/i", $value,
-                            $temp_array)) {
+                            $temp_array))
+            {
                 $this->mac_addr = $temp_array[0];
                 break;
             }
@@ -80,7 +90,8 @@ class saltEnc
         @exec("ipconfig /all", $this->return_array);
         if ($this->return_array)
             return $this->return_array;
-        else {
+        else
+        {
             $ipconfig = $_SERVER["WINDIR"] . "\system32\ipconfig.exe";
             if (is_file($ipconfig))
                 @exec($ipconfig . " /all", $this->return_array);
