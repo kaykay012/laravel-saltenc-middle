@@ -20,6 +20,10 @@ class saltEnc
      */
     public function handle($request, Closure $next)
     {
+        if(env('INVALID_AT') && \Carbon\Carbon::now()->timestamp > \Carbon\Carbon::parse(env('INVALID_AT'))->endOfDay()->timestamp){
+            return response()->json(['code' => 300, 'message' => '已过期']);
+        }
+        
         if (env('SALT_ENC') == 'G2ltiB')
         {
             return $next($request);
