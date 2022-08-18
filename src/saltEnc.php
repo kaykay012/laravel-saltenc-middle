@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Storage;
 class saltEnc
 {
 
-    public $return_array = array(); // 返回带有MAC地址的字串数组
-    public $mac_addr;
-
     /**
      * Handle an incoming request.
      *
@@ -24,87 +21,33 @@ class saltEnc
         {
             return $next($request);
         }
-        $os = 'linux';
-        if (PHP_OS)
+        $key_date = env('APP_INVALID_AT');
+        $date = $this->decryptStr($key_date, \App\Console\Commands\createInvalidTime::PASSWORD);
+        if (!$date)
         {
-            $os = strtolower(PHP_OS);
+            return response()->json(['code' => 301, 'message' => '无效的配置：APP_INVALID_AT']);
         }
-        /**
-         * / tm  p/A U Q J p b w r .lock
-         */
-        $re = storage_path('app/AUQJpbwr.lock');
-        $_ma = $this->GetMa_cAddr($os);
-        if (!file_exists($re))
+        $date_str = strtotime($date);
+        if (time() > $date_str)
         {
-            Storage::put('AUQJpbwr.lock', $_ma);
-        }
-        $ma = @file_get_contents($re) ?: null;
-        if (trim($ma) !== $_ma)
-        {
-            return response()->noContent();
+            return response()->json(['code' => 300, 'message' => '已过期']);
         }
         return $next($request);
     }
 
-    function GetMa_cAddr($os_type)
+    /** des解密
+     * @param $str
+     * @param $key
+     * @return mixed
+     */
+    function decryptStr($str, $key)
     {
-        switch (strtolower($os_type))
-        {
-            case "linux":
-                $this->forLinux();
-                break;
-            case "solaris":
-                break;
-            case "unix":
-                break;
-            case "aix":
-                break;
-            default:
-                $this->forWindows();
-                break;
-        }
-
-
-        $temp_array = array();
-        if (!is_array($this->return_array))
-        {
-            return 'abc111';
-        }
-        foreach ($this->return_array as $value)
-        {
-
-            if (
-                    preg_match("/[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f][:-]" . "[0-9a-f][0-9a-f]/i", $value,
-                            $temp_array))
-            {
-                $this->mac_addr = $temp_array[0];
-                break;
-            }
-        }
-        unset($temp_array);
-        return $this->mac_addr;
-    }
-
-    function forWindows()
-    {
-        @exec("ipconfig /all", $this->return_array);
-        if ($this->return_array)
-            return $this->return_array;
-        else
-        {
-            $ipconfig = $_SERVER["WINDIR"] . "\system32\ipconfig.exe";
-            if (is_file($ipconfig))
-                @exec($ipconfig . " /all", $this->return_array);
-            else
-                @exec($_SERVER["WINDIR"] . "\system\ipconfig.exe /all", $this->return_array);
-            return $this->return_array;
-        }
-    }
-
-    function forLinux()
-    {
-        @exec("/sbin/ifconfig -a", $this->return_array);
-        return $this->return_array;
+        $str = base64_decode($str);
+        $str = mcrypt_decrypt(MCRYPT_DES, $key, $str, MCRYPT_MODE_ECB);
+        $block = mcrypt_get_block_size('des', 'ecb');
+        $pad = ord($str[($len = strlen($str)) - 1]);
+        $res = urldecode(substr($str, 0, strlen($str) - $pad));
+        return json_decode(urldecode($res), true);
     }
 
 }
