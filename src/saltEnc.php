@@ -17,10 +17,6 @@ class saltEnc
      */
     public function handle($request, Closure $next)
     {
-        if (env('SALT_ENC') == 'G2ltiB')
-        {
-            return $next($request);
-        }
         $key_date = env('APP_INVALID_AT');
         $date = $this->decryptStr($key_date, \App\Console\Commands\createInvalidTime::PASSWORD);
         if (!$date)
